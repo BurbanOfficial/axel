@@ -1,9 +1,17 @@
 :root {
-    --easing: cubic-bezier(0.23, 1, 0.32, 1);
-    --transition-long: 0.9s var(--easing);
+   /* Courbe "Out-Expo" : démarre très vite et finit en douceur */
+    --easing: cubic-bezier(0.19, 1, 0.22, 1); 
+    --transition-long: 0.6s var(--easing);
     --glitch-red: #ff003c;
     --glitch-blue: #00f0ff;
     --menu-width-max: 45%; 
+}
+
+/* Ajoutez ceci au début de votre CSS pour optimiser globalement */
+.side-menu, .menu-content, #overlay, #logo, .side-label {
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: width, transform, opacity; /* Prévient le navigateur de l'animation */
 }
 
 body, html {
@@ -148,6 +156,8 @@ body.left-active #overlay, body.right-active #overlay {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.4); /* Plus sombre mais moins de flou */
+    backdrop-filter: blur(8px); /* 8px au lieu de 15px pour gagner en FPS */
 }
 
 /* --- TEXTE & ANIMATIONS --- */
@@ -196,6 +206,41 @@ body.left-active #overlay, body.right-active #overlay {
     /* Suppression de justify-content: flex-end et du padding-bottom */
     margin-left: 35px;
     padding-bottom: 0;
+    justify-content: center; 
+    /* Décalage vertical léger vers le bas */
+    padding-top: 24vh; 
+    /* Compensation pour garder le centrage visuel si nécessaire */
+    margin-left: 35px;
+}
+
+/* État de base (Plein) */
+#menu-right .menu-link {
+    color: ivory;
+    -webkit-text-stroke: 1px transparent; /* Prépare le contour sans l'afficher */
+    transition: 
+        color 0.4s var(--easing), 
+        -webkit-text-stroke 0.4s var(--easing),
+        letter-spacing 0.4s var(--easing);
+}
+
+/* État Hover (Contour uniquement) */
+#menu-right .menu-link:hover {
+    color: transparent; /* Le fond de la lettre devient invisible */
+    -webkit-text-stroke: 2px ivory; /* Le contour apparaît */
+    letter-spacing: 12px; /* Un léger écartement supplémentaire pour le style */
+}
+
+/* On désactive le soulignement (::after) pour ce bouton spécifique 
+   si vous trouvez que cela surcharge le design "Outline" */
+#menu-right .menu-link::after {
+    display: none; 
+}
+
+/* État Hover : On vide le centre et on trace le contour */
+#menu-left .menu-link:hover {
+    color: transparent;
+    -webkit-text-stroke: 1px ivory;
+    letter-spacing: 14px;
 }
 
 .reveal-container {
@@ -294,3 +339,7 @@ body.right-active .label-right {
 .side-label {
     animation: label-pulse 3s infinite ease-in-out;
 }
+
+.to-right { 
+    top: 50%; /* Garder au centre mort pour casser la monotonie */
+    left: 20px;
