@@ -15,12 +15,34 @@
 }
 
 body, html {
+    cursor: none !important;
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
     overflow: hidden;
     display: flex;
     background-color: ivory;
     font-family: 'Inter', system-ui, sans-serif;
+}
+
+#cursor {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    background-image: url('https://i.imgur.com/8FCKZAi.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 9999999;
+    transform: translate(-50%, -50%);
+    filter: invert(1);
+    mix-blend-mode: difference;
+}
+
+/* Supprime TOUS les curseurs natifs */
+*,
+*::before,
+*::after {
+    cursor: none !important;
 }
 
 /* --- LOGIQUE DES MENUS --- */
@@ -114,11 +136,35 @@ body.left-active #menu-left::before, body.right-active #menu-right::before {
     color: #000;
     font-size: 0.85rem;
     font-weight: 400;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     opacity: 0.6;
-    margin: 0;
+    margin: 0;              /* Reset important */
+    text-align: center;
     transition: opacity 0.5s var(--easing), transform 0.5s var(--easing);
+    white-space: nowrap;    /* Garde le texte sur une ligne */
+    animation: pulse-attention 2s infinite ease-in-out;
+}
+
+@keyframes pulse-attention {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scale(0.97); /* Rétrécit légèrement */
+    }
+    50% { 
+        opacity: 1;    /* Devient totalement opaque */
+        transform: scale(1.05); /* Grandit légèrement */
+        text-shadow: 0 0 10px rgba(0,0,0,0.1); /* Petit halo de lumière */
+    }
+}
+
+/* Masquage quand un menu est actif */
+body.left-active .instruction, 
+body.right-active .instruction {
+    opacity: 0;
+    animation: none;
+    pointer-events: none;
+    transform: translateY(15px); /* Glisse vers le bas en disparaissant */
 }
 
 /* --- ZONE CENTRALE (FIX FLOU) --- */
@@ -134,7 +180,9 @@ body.left-active #menu-left::before, body.right-active #menu-right::before {
 }
 
 #logo { 
-    max-width: 650px; 
+    max-width: 650px;
+    width: 90vw;            /* Pour que le logo ne dépasse pas sur petit écran */
+    height: auto;
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
     transition: transform 0.8s var(--easing);
     z-index: 10;
@@ -241,7 +289,7 @@ body.left-active #overlay, body.right-active #overlay {
 #menu-left .menu-link:hover {
     color: transparent;
     -webkit-text-stroke: 1px ivory;
-    letter-spacing: 14px;
+    letter-spacing: 12px;
 }
 
 .reveal-container {
@@ -319,7 +367,7 @@ body.right-active .pencil-cursor {
 
 .label-right {
     right: 20px;
-    transform: translateY(-50%) rotate(180deg); 
+    transform: translateY(-50%) rotate(180deg);
 }
 
 /* --- INTERACTIONS --- */
