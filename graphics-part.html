@@ -119,10 +119,88 @@ html, body {
     text-shadow: 0.08em 0.08em 0px #ff0836; 
 }
 
+/* --- BLOCAGE MOBILE & TABLETTE --- */
+#mobile-blocker {
+    display: none; /* Caché par défaut */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: ivory; /* Même couleur que ton fond */
+    z-index: 1000000; /* Au-dessus de tout, même du curseur */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.blocker-content {
+    max-width: 500px;
+}
+
+.blocker-logo {
+    width: 150px;
+    margin-bottom: 30px;
+    filter: grayscale(1);
+}
+
+#mobile-blocker h1 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+#mobile-blocker p {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.blocker-content .small {
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+.device-icon {
+    font-size: 3rem;
+    margin-top: 30px;
+    animation: pulse-attention 2s infinite ease-in-out;
+}
+
+/* MÉDIA QUERY : Active le blocage si l'écran est petit OU si c'est un appareil tactile sans souris */
+@media (max-width: 1024px), (pointer: coarse) {
+    #mobile-blocker {
+        display: flex; /* On l'affiche */
+    }
+    
+    body, html {
+        overflow: hidden !important; /* On empêche tout scroll derrière */
+    }
+    
+    #cursor {
+        display: none !important; /* On cache ton curseur custom sur mobile */
+    }
+}
+
 </style>
 </head>
 
 <body>
+<div id="mobile-blocker">
+    <div class="blocker-content">
+        <img src="https://i.imgur.com/Ns30AYK.png" alt="Logo" class="blocker-logo">
+        <h1>EXPÉRIENCE NON SUPPORTÉE</h1>
+        <p>Ce portfolio utilise des technologies avancées et une navigation interactive conçue exclusivement pour <strong>ordinateur</strong>.</p>
+        <p class="small">Pour un confort de lecture optimal et profiter des performances visuelles, merci d'y accéder via un ordinateur.</p>
+        <div class="device-icon">💻</div>
+    </div>
+</div>
 
 <div class="relative-container">
     <img src="https://i.imgur.com/1gp3aFe.jpeg" class="page-image" alt="Graphics page">
