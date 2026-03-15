@@ -15,13 +15,37 @@
 }
 
 html, body {
+    cursor: none !important;
     margin: 0;
     padding: 0;
     background: ivory;
     font-family: Arial, sans-serif;
+    /* On cache le curseur classique de la souris sur toute la page */
+    cursor: none; 
 }
 
-/* 1. LE CONTENEUR CRUCIAL */
+#cursor {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    background-image: url('https://i.imgur.com/8FCKZAi.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 9999999;
+    transform: translate(-50%, -50%);
+    filter: invert(1);
+    mix-blend-mode: difference;
+}
+
+/* Supprime TOUS les curseurs natifs */
+*,
+*::before,
+*::after {
+    cursor: none !important;
+}
+
+/* --- LE CONTENEUR CRUCIAL --- */
 .relative-container {
     position: relative;
     width: 100%;
@@ -33,34 +57,25 @@ html, body {
     display: block;
 }
 
-/* 2. LE LIEN FLUIDE */
+/* --- LE LIEN FLUIDE --- */
 .projets-link {
     position: absolute;
     right: 12.4%;
-    
-    /* ⚠️ ATTENTION : J'ai remplacé 350% par 80%. 
-       Avec le nouveau conteneur, 100% correspond au tout bas de l'image. 
-       Ajuste ce pourcentage (ex: 75%, 82%...) pour le placer pile où tu veux ! */
     top: 76.3%; 
-    
-    /* La taille du texte s'adapte à la largeur de l'écran (5vw = 5% de l'écran) */
     font-size: 5vw; 
-    
     font-weight: 700;
     text-decoration: none;
     font-family: "CafeFrancoise", cursive;
     rotate: 7.75deg;
     scale: 1;
-
-    /* Utilisation de "em" pour que l'espacement s'adapte à la taille du texte */
     letter-spacing: 0.12em; 
     scale: 1.15;
 
-    /* État par défaut : Texte transparent avec contour animé */
+    /* État par défaut */
     color: transparent;
-    -webkit-text-stroke: 0.02em #000000; /* Remplace les 1.5px */
+    -webkit-text-stroke: 0.02em #000000; 
     
-    /* Dégradé qui sert de "trait" mobile */
+    /* Dégradé de tracé */
     background: linear-gradient(to right, 
         transparent 0%, 
         #ff0836 100%, 
@@ -72,10 +87,10 @@ html, body {
     -webkit-background-clip: text;
     background-clip: text;
 
-    /* Animation du trait en continu */
+    /* Animation */
     animation: outlineSweep 3s infinite linear;
 
-    /* Transition fluide pour le hover */
+    /* Transition */
     transition: 
         scale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         translate 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
@@ -83,26 +98,25 @@ html, body {
         text-shadow 0.3s ease;
 }
 
-/* Animation du trait qui parcourt les lettres */
 @keyframes outlineSweep {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
 
-/* --- EFFET HOVER --- */
+/* --- EFFET HOVER LIEN --- */
 .projets-link:hover {
-    animation: none; /* Stop le parcours du trait */
+    animation: none; 
     background: none;
     -webkit-background-clip: initial;
     background-clip: initial;
     
     scale: 1.15;
-    translate: 0 -0.1em; /* Remplace les -5px par du relatif */
-    letter-spacing: 0.12em; /* Remplace les 8px */
+    translate: 0 -0.1em; 
+    letter-spacing: 0.12em; 
     
     color: transparent;
-    -webkit-text-stroke: 0.03em black; /* Remplace les 2px */
-    text-shadow: 0.08em 0.08em 0px #ff0836; /* Remplace les 6px 6px (ombre néo-brutaliste) */
+    -webkit-text-stroke: 0.03em black; 
+    text-shadow: 0.08em 0.08em 0px #ff0836; 
 }
 
 </style>
@@ -114,6 +128,19 @@ html, body {
     <img src="https://i.imgur.com/1gp3aFe.jpeg" class="page-image" alt="Graphics page">
     <a href="projets.html" class="projets-link">Projets</a>
 </div>
+
+<div id="cursor"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cursor = document.getElementById("cursor");
+
+    document.addEventListener("mousemove", function(e) {
+        cursor.style.left = e.clientX + "px";
+        cursor.style.top = e.clientY + "px";
+    });
+});
+</script>
 
 </body>
 </html>
