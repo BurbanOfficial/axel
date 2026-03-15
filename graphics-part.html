@@ -21,29 +21,44 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
+/* 1. LE CONTENEUR CRUCIAL */
+.relative-container {
+    position: relative;
+    width: 100%;
+}
+
 .page-image {
     width: 100%;
     height: auto;
     display: block;
 }
 
-/* Lien Projets */
+/* 2. LE LIEN FLUIDE */
 .projets-link {
     position: absolute;
-    right: 13%;
-    top: 350%; 
+    right: 12.4%;
     
-    scale: 1.15;
-    font-size: 70px;
+    /* ⚠️ ATTENTION : J'ai remplacé 350% par 80%. 
+       Avec le nouveau conteneur, 100% correspond au tout bas de l'image. 
+       Ajuste ce pourcentage (ex: 75%, 82%...) pour le placer pile où tu veux ! */
+    top: 76.3%; 
+    
+    /* La taille du texte s'adapte à la largeur de l'écran (5vw = 5% de l'écran) */
+    font-size: 5vw; 
+    
     font-weight: 700;
     text-decoration: none;
-    letter-spacing: 8px;
     font-family: "CafeFrancoise", cursive;
     rotate: 7.75deg;
+    scale: 1;
+
+    /* Utilisation de "em" pour que l'espacement s'adapte à la taille du texte */
+    letter-spacing: 0.12em; 
+    scale: 1.15;
 
     /* État par défaut : Texte transparent avec contour animé */
     color: transparent;
-    -webkit-text-stroke: 1.5px #000000; /* Contour fixe très léger */
+    -webkit-text-stroke: 0.02em #000000; /* Remplace les 1.5px */
     
     /* Dégradé qui sert de "trait" mobile */
     background: linear-gradient(to right, 
@@ -82,12 +97,12 @@ html, body {
     background-clip: initial;
     
     scale: 1.15;
-    translate: 0 -5px;
-    letter-spacing: 8px;
+    translate: 0 -0.1em; /* Remplace les -5px par du relatif */
+    letter-spacing: 0.12em; /* Remplace les 8px */
     
     color: transparent;
-    -webkit-text-stroke: 2px black; /* Contour plus marqué */
-    text-shadow: 6px 6px 0px #ff0836; /* Ombre néo-brutaliste */
+    -webkit-text-stroke: 0.03em black; /* Remplace les 2px */
+    text-shadow: 0.08em 0.08em 0px #ff0836; /* Remplace les 6px 6px (ombre néo-brutaliste) */
 }
 
 </style>
@@ -95,9 +110,10 @@ html, body {
 
 <body>
 
-<img src="https://i.imgur.com/1gp3aFe.jpeg" class="page-image" alt="Graphics page">
-
-<a href="projets.html" class="projets-link">Projets</a>
+<div class="relative-container">
+    <img src="https://i.imgur.com/1gp3aFe.jpeg" class="page-image" alt="Graphics page">
+    <a href="projets.html" class="projets-link">Projets</a>
+</div>
 
 </body>
 </html>
