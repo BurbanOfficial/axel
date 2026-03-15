@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graphics Part – Axel Cormon</title>
+
+<style>
+
+html,body{
+    margin:0;
+    padding:0;
+    background:ivory;
+    font-family:Arial, sans-serif;
+}
+
+/* Image principale */
+.page-image{
+    width:100%;
+    height:auto;
+    display:block;
+}
+
+/* Lien projets */
+.projets-link{
+    position:fixed;
+    right:40px;
+
+    /* Ajuste cette valeur pour tomber exactement en face de "Cours :" */
+    top:72vh;
+
+    font-size:28px;
+    font-weight:700;
+    color:black;
+    text-decoration:none;
+    letter-spacing:2px;
+
+    transition:all 0.25s ease;
+}
+
+/* effet hover */
+.projets-link:hover{
+    transform:translateX(-6px);
+    opacity:0.6;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- image qui constitue toute la page -->
+<img src="image/graphics-page.png" class="page-image" alt="Graphics page">
+
+<!-- bouton projets -->
+<a href="projets.html" class="projets-link">Projets</a>
+
+</body>
+</html>

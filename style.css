@@ -392,3 +392,4 @@ body.right-active .label-right {
 .to-right { 
     top: 50%; /* Garder au centre mort pour casser la monotonie */
     left: 20px;
+}
