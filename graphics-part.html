@@ -6,42 +6,88 @@
 <title>Graphics Part – Axel Cormon</title>
 
 <style>
-
-html,body{
-    margin:0;
-    padding:0;
-    background:ivory;
-    font-family:Arial, sans-serif;
+/* Intégration de la police */
+@font-face {
+    font-family: "CafeFrancoise";
+    src: url("fonts/CafeFrancoise.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
 }
 
-/* Image principale */
-.page-image{
-    width:100%;
-    height:auto;
-    display:block;
+html, body {
+    margin: 0;
+    padding: 0;
+    background: ivory;
+    font-family: Arial, sans-serif;
 }
 
-/* Lien projets */
-.projets-link{
-    position:fixed;
-    right:40px;
-
-    /* Ajuste cette valeur pour tomber exactement en face de "Cours :" */
-    top:72vh;
-
-    font-size:28px;
-    font-weight:700;
-    color:black;
-    text-decoration:none;
-    letter-spacing:2px;
-
-    transition:all 0.25s ease;
+.page-image {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
-/* effet hover */
-.projets-link:hover{
-    transform:translateX(-6px);
-    opacity:0.6;
+/* Lien Projets */
+.projets-link {
+    position: absolute;
+    right: 13%;
+    top: 349.5%; 
+    
+    scale: 1.15;
+    font-size: 70px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 8px;
+    font-family: "CafeFrancoise", cursive;
+    rotate: 7.75deg;
+
+    /* État par défaut : Texte transparent avec contour animé */
+    color: transparent;
+    -webkit-text-stroke: 1.5px #0000002f; /* Contour fixe très léger */
+    
+    /* Dégradé qui sert de "trait" mobile */
+    background: linear-gradient(to right, 
+        transparent 0%, 
+        #ff0836 100%, 
+        #ff0836 100%, 
+        transparent 0%, 
+        transparent 0%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    /* Animation du trait en continu */
+    animation: outlineSweep 3s infinite linear;
+
+    /* Transition fluide pour le hover */
+    transition: 
+        scale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        translate 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        letter-spacing 0.3s ease,
+        text-shadow 0.3s ease;
+}
+
+/* Animation du trait qui parcourt les lettres */
+@keyframes outlineSweep {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* --- EFFET HOVER --- */
+.projets-link:hover {
+    animation: none; /* Stop le parcours du trait */
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    
+    scale: 1.15;
+    translate: 0 -5px;
+    letter-spacing: 8px;
+    
+    color: transparent;
+    -webkit-text-stroke: 2px black; /* Contour plus marqué */
+    text-shadow: 6px 6px 0px #ff0836; /* Ombre néo-brutaliste */
 }
 
 </style>
@@ -49,10 +95,8 @@ html,body{
 
 <body>
 
-<!-- image qui constitue toute la page -->
-<img src="image/graphics-page.png" class="page-image" alt="Graphics page">
+<img src="https://i.imgur.com/1gp3aFe.jpeg" class="page-image" alt="Graphics page">
 
-<!-- bouton projets -->
 <a href="projets.html" class="projets-link">Projets</a>
 
 </body>
