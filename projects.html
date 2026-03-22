@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Axel Cormon</title>
+    <style>
+        :root {
+            --c1: #f4f1ea; --c2: #e0ddd5; --c3: #d1ce07; --c4: #b8b5ac;
+            --transition-smooth: 1.2s cubic-bezier(0.2, 1, 0.2, 1);
+            --modal-ui-color: white; /* Variable pour piloter la couleur de l'interface modale */
+        }
+
+        /* --- 1. Stabilisation Radicale (Anti-Saut) --- */
+        html {
+            margin: 0; padding: 0;
+            width: 100%;
+            scroll-behavior: auto !important;
+            cursor: none !important;
+        }
+
+        body {
+            margin: 0; padding: 0; width: 100%;
+            background-color: #f4f1ea;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            box-sizing: border-box;
+            cursor: none !important;
+        }
+
+        body.project-open {
+            position: fixed; 
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #cursor {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            background-image: url('https://i.imgur.com/8FCKZAi.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 9999999;
+            transform: translate(-50%, -50%);
+            filter: invert(1);
+            mix-blend-mode: difference;
+        }
+
+        /* Supprime TOUS les curseurs natifs */
+        *,
+        *::before,
+        *::after {
+            cursor: none !important;
+        }
+
+        /* --- 2. Grain Chic & Doux --- */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03; pointer-events: none; z-index: 9999;
+            mix-blend-mode: multiply;
+            animation: grainFlow 8s steps(10) infinite;
+        }
+
+        @keyframes grainFlow {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-1%, 1%); }
+            50% { transform: translate(1%, -1%); }
+        }
+
+        /* --- 3. Backgrounds --- */
+        .dynamic-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0; transition: opacity var(--transition-smooth);
+            background: 
+                radial-gradient(circle at 10% 20%, var(--c1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 10%, var(--c2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 90%, var(--c3) 0%, transparent 45%),
+                radial-gradient(circle at 80% 80%, var(--c4) 0%, transparent 40%);
+            background-color: var(--c1);
+            filter: blur(80px);
+            animation: floatBackground 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatBackground {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15) rotate(1deg); }
+        }
+
+        .background-paper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.imgur.com/7AuhwYG.png');
+            background-size: cover; z-index: -2;
+            transition: opacity 1.5s ease, filter 1.5s ease;
+        }
+
+        /* --- 4. Grille --- */
+        .main-wrapper { padding: 120px 20px; transition: opacity 0.8s ease; }
+        .projects-container { display: flex; flex-direction: column; max-width: 1100px; margin: 0 auto; }
+
+        .project-card {
+            position: relative; width: 60%; margin-bottom: -10%; 
+            transition: all 0.9s cubic-bezier(0.2, 1, 0.2, 1);
+            cursor: pointer; z-index: 1;
+            --parallax-y: 0px; 
+            transform: translateY(var(--parallax-y));
+        }
+
+        .project-card img { width: 100%; border-radius: 2px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+        .project-card.left { align-self: flex-start; }
+        .project-card.right { align-self: flex-end; }
+
+        .projects-container:has(.project-card:hover) .project-card:not(:hover) {
+            filter: blur(2px); opacity: 0.5;
+        }
+
+        /* --- 5. Modal & Transitions --- */
+        body.project-open .dynamic-bg { opacity: 1; }
+        body.project-open .background-paper { opacity: 0.1; filter: blur(20px); }
+        body.project-open .main-wrapper { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+
+        #project-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 12%; box-sizing: border-box;
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 1s ease, color 0.5s ease; 
+            color: var(--modal-ui-color); /* Texte dynamique */
+        }
+
+        body.project-open #project-view { opacity: 1; pointer-events: auto; }
+
+        .close-btn { 
+            position: absolute; top: 60px; right: 60px;
+            width: 54px; height: 54px;
+            background: transparent;
+            border: 1px solid var(--modal-ui-color); /* Bordure dynamique */
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            color: var(--modal-ui-color); /* Croix dynamique */
+            padding: 0; z-index: 2001;
+            opacity: 0.6;
+        }
+
+        .close-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; transition: transform 0.4s ease; }
+        .close-btn:hover { 
+            background-color: var(--modal-ui-color); 
+            color: var(--c1); /* La croix prend la couleur du fond au survol */
+            transform: scale(1.1); 
+            opacity: 1;
+        }
+        .close-btn:hover svg { transform: rotate(90deg); }
+
+        .flying-img {
+            position: fixed;
+            z-index: 2000;
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+            pointer-events: none;
+            border-radius: 2px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            object-fit: cover;
+        }
+
+        #view-img {
+            opacity: 0;
+            transition: opacity 0.3s ease 0.6s;
+        }
+
+        body.project-open #view-img { opacity: 1; }
+
+        /* --- 6. Skills --- */
+        .skills-wrapper { display: flex; flex-wrap: wrap; gap: 10px; margin: 25px 0; }
+        .skill-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 16px; border-radius: 100px;
+            font-size: 0.75rem; letter-spacing: 1px;
+            text-transform: uppercase; font-weight: 300;
+            color: inherit; transition: all 0.3s ease;
+        }
+        .skill-bubble:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+
+        .view-left { width: 50%; }
+        .view-left img { width: 100%; max-width: 550px; border-radius: 2px; box-shadow: 0 40px 100px rgba(0,0,0,0.3); }
+        .view-right { width: 38%; }
+        .view-right h2 { font-size: 4.5rem; margin: 0; font-weight: 200; text-transform: uppercase; letter-spacing: -2px; }
+        .view-right p { font-size: 1rem; line-height: 1.7; opacity: 0.8; font-weight: 300; margin-bottom: 30px; }
+
+        #colorCanvas { display: none; }
+
+        /* --- BLOCAGE MOBILE & TABLETTE --- */
+        #mobile-blocker {
+            display: none; /* Caché par défaut */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: ivory; /* Même couleur que ton fond */
+            z-index: 1000000; /* Au-dessus de tout, même du curseur */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .blocker-content {
+            max-width: 500px;
+        }
+
+        .blocker-logo {
+            width: 150px;
+            margin-bottom: 30px;
+            filter: grayscale(1);
+        }
+
+        #mobile-blocker h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        #mobile-blocker p {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .blocker-content .small {
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+
+        .device-icon {
+            font-size: 3rem;
+            margin-top: 30px;
+            animation: pulse-attention 2s infinite ease-in-out;
+        }
+
+        /* MÉDIA QUERY : Active le blocage si l'écran est petit OU si c'est un appareil tactile sans souris */
+        @media (max-width: 1024px), (pointer: coarse) {
+            #mobile-blocker {
+                display: flex; /* On l'affiche */
+            }
+            
+            body, html {
+                overflow: hidden !important; /* On empêche tout scroll derrière */
+            }
+            
+            #cursor {
+                display: none !important; /* On cache ton curseur custom sur mobile */
+            }
+        }
+
+        #view-link {
+            position: relative;
+            display: inline-block;
+            padding: 12px 24px;
+            
+            color: black;
+            border: 1px solid black;
+            text-decoration: none;
+
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            
+            overflow: hidden;
+            transition: color 0.4s ease;
+        }
+
+        /* couche noire animée */
+        #view-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            
+            width: 0%;
+            height: 100%;
+            
+            background-color: black;
+            z-index: 0;
+            transition: width 0.4s ease;
+        }
+
+        /* texte au-dessus */
+        #view-link span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* hover */
+        #view-link:hover::before {
+            width: 100%;
+        }
+
+        #view-link:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mobile-blocker">
+    <div class="blocker-content">
+        <img src="https://i.imgur.com/Ns30AYK.png" alt="Logo" class="blocker-logo">
+        <h1>EXPÉRIENCE NON SUPPORTÉE</h1>
+        <p>Ce portfolio utilise des technologies avancées et une navigation interactive conçue exclusivement pour <strong>ordinateur</strong>.</p>
+        <p class="small">Pour un confort de lecture optimal et profiter des performances visuelles, merci d'y accéder via un ordinateur.</p>
+        <div class="device-icon">💻</div>
+    </div>
+</div>
+
+    <div class="grain-overlay"></div>
+    <div class="background-paper"></div>
+    <div class="dynamic-bg"></div>
+
+    <div class="main-wrapper">
+        <div class="projects-container">
+            <div class="project-card left" data-title="Enedis" data-url="https://www.enedis.fr" data-skills="..., ..., ..." data-desc="Description">
+                <img src="https://i.imgur.com/1ThXv1A.png" crossorigin="anonymous">
+            </div>
+            <div class="project-card right" data-title="Paco Rabanne" data-url="https://www.rabanne.com/" data-skills="..., ..., ..." data-desc="Description">
+                <img src="https://i.imgur.com/Piu4ZVx.png" crossorigin="anonymous">
+            </div>
+            <div class="project-card left" data-title="Dyptique Paris" data-url="https://www.diptyqueparis.com" data-skills="..., ..., ..." data-desc="Description">
+                <img src="https://i.imgur.com/Y3tcBJ2.png" crossorigin="anonymous">
+            </div>
+            <div class="project-card right" data-title="Azura" data-url="https://azura-group.com" data-skills="..., ..., ..." data-desc="Description">
+                <img src="https://i.imgur.com/sfE8z8T.png" crossorigin="anonymous">
+            </div>
+            <div class="project-card left" data-title="Gallimard" data-url="https://www.gallimard.fr" data-skills="..., ..., ..." data-desc="Description">
+                <img src="https://i.imgur.com/R2ihc5R.png" crossorigin="anonymous">
+            </div>
+            <div class="project-card right" data-title="Explore Savoie" data-url="https://www.explore-savoie.com" data-skills="..., ..., ..." data-desc="Description">
+                <img src="https://i.imgur.com/CKdTpuf.png" crossorigin="anonymous">
+            </div>
+        </div>
+    </div>
+
+    <div id="project-view">
+        <button class="close-btn" onclick="closeProject()">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <div class="view-left"><img id="view-img" src=""></div>
+        <div class="view-right">
+            <h2 id="view-title">Projet</h2>
+            <div class="skills-wrapper" id="view-skills"></div>
+            <p id="view-desc">Description...</p>
+            <a id="view-link" href="#"><span>VISITER LE SITE WEB</span></a>
+        </div>
+    </div>
+
+    <canvas id="colorCanvas"></canvas>
+    <div id="cursor"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const cursor = document.getElementById("cursor");
+
+        document.addEventListener("mousemove", function(e) {
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
+        });
+    });
+    </script>
+
+    <script>
+        const canvas = document.getElementById('colorCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentScroll = 0;
+
+        function getLuminance(r, g, b) {
+            let a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function extractColors(imgElement) {
+            canvas.width = imgElement.naturalWidth;
+            canvas.height = imgElement.naturalHeight;
+            ctx.drawImage(imgElement, 0, 0);
+            
+            const points = [{x: 50, y:50}, {x: canvas.width-50, y:50}, {x: 50, y:canvas.height-50}, {x: canvas.width/2, y:canvas.height/2}];
+            const rawColors = points.map(p => ctx.getImageData(p.x, p.y, 1, 1).data);
+            
+            const colors = rawColors.map(d => `rgb(${d[0]}, ${d[1]}, ${d[2]})`);
+            
+            // Calcul du contraste basé sur la première couleur (fond dominant)
+            const lum = getLuminance(rawColors[0][0], rawColors[0][1], rawColors[0][2]);
+            const uiColor = lum > 0.5 ? '#1a1a1a' : '#ffffff';
+            
+            document.documentElement.style.setProperty('--c1', colors[0]);
+            document.documentElement.style.setProperty('--c2', colors[1]);
+            document.documentElement.style.setProperty('--c3', colors[2]);
+            document.documentElement.style.setProperty('--c4', colors[3]);
+            document.documentElement.style.setProperty('--modal-ui-color', uiColor);
+        }
+
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const img = card.querySelector('img');
+                currentScroll = window.scrollY;
+                const rect = img.getBoundingClientRect();
+                
+                const clone = img.cloneNode();
+                clone.classList.add('flying-img');
+                
+                Object.assign(clone.style, {
+                    top: rect.top + 'px',
+                    left: rect.left + 'px',
+                    width: rect.width + 'px',
+                    height: rect.height + 'px'
+                });
+                document.body.appendChild(clone);
+
+                document.body.style.top = `-${currentScroll}px`;
+                document.body.classList.add('project-open');
+
+                extractColors(img);
+                document.getElementById('view-title').innerText = card.getAttribute('data-title');
+                document.getElementById('view-desc').innerText = card.getAttribute('data-desc');
+                // Dans le bloc card.addEventListener('click', () => { ... })
+                document.getElementById('view-title').innerText = card.getAttribute('data-title');
+                document.getElementById('view-desc').innerText = card.getAttribute('data-desc');
+
+                // LIGNE À AJOUTER :
+                document.getElementById('view-link').href = card.getAttribute('data-url');
+                const modalImg = document.getElementById('view-img');
+                modalImg.src = img.src;
+
+                const skillsData = card.getAttribute('data-skills');
+                const container = document.getElementById('view-skills');
+                container.innerHTML = '';
+                if(skillsData) {
+                    skillsData.split(',').forEach(s => {
+                        const b = document.createElement('span');
+                        b.className = 'skill-bubble';
+                        b.innerText = s.trim();
+                        container.appendChild(b);
+                    });
+                }
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const destRect = modalImg.getBoundingClientRect();
+                        Object.assign(clone.style, {
+                            top: destRect.top + 'px',
+                            left: destRect.left + 'px',
+                            width: destRect.width + 'px',
+                            height: destRect.height + 'px'
+                        });
+                    });
+                });
+
+                setTimeout(() => {
+                    clone.style.opacity = '0';
+                    setTimeout(() => clone.remove(), 800);
+                }, 850);
+            });
+        });
+
+        function closeProject() {
+            document.body.classList.remove('project-open');
+            document.body.style.top = '';
+            window.scrollTo(0, currentScroll);
+        }
+
+        window.addEventListener('scroll', () => {
+            if (document.body.classList.contains('project-open')) return;
+            const s = window.scrollY;
+            document.querySelectorAll('.project-card.left').forEach(c => c.style.setProperty('--parallax-y', `${s * -0.05}px`));
+            document.querySelectorAll('.project-card.right').forEach(c => c.style.setProperty('--parallax-y', `${s * -0.02}px`));
+        });
+    </script>
+</body>
+</html>
